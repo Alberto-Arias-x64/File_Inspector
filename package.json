@@ -1,0 +1,12 @@
+{
+  "name": "file_inspector",
+  "version": "1.0.0",
+  "description": "file traceability utility",
+  "main": "fileInspector.js",
+  "scripts": {
+    "start": "node fileInspector.js"
+  },
+  "keywords": [],
+  "author": "Alberto_X64",
+  "license": "GNU GPLv3"
+}
