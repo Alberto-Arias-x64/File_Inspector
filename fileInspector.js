@@ -6,7 +6,7 @@ const baseDir = './dir';
 const date = new Date()
 const outputDir = `./output-${date.getTime()}`;
 const ignoreDirs = ['node_modules'];
-const ignoreFile = [/.+\.js/];
+const ignoreFile = [/.+\.js/, /.+\.ts/];
 
 const scanDir = (dir, fileHashes = {}) => {
     const files = fs.readdirSync(dir);
