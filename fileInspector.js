@@ -6,7 +6,7 @@ const baseDir = './dir';
 const date = new Date()
 const outputDir = `./output-${date.getTime()}`;
 const ignoreDirs = ['node_modules'];
-const ignoreFile = ['main.js'];
+const ignoreFile = [/.+\.js/];
 
 const scanDir = (dir, fileHashes = {}) => {
     const files = fs.readdirSync(dir);
@@ -17,7 +17,7 @@ const scanDir = (dir, fileHashes = {}) => {
             if (ignoreDirs.includes(file)) return;
             scanDir(filePath, fileHashes);
         } else {
-            if (ignoreFile.includes(file)) return;
+            if (ignoreFile.some(element => element.test(file))) return;
             const fileData = fs.readFileSync(filePath);
             const fileHash = crypto.createHash('sha256').update(fileData).digest('hex');
             const relativePath = path.relative(baseDir, filePath);
