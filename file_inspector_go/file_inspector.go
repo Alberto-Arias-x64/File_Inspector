@@ -11,15 +11,16 @@ import (
 	"time"
 )
 
-var baseDir = "../"
-var outputDir = fmt.Sprintf("./output-%d-%d-%d_%d-%d", time.Now().Day(), time.Now().Month(), time.Now().Year(), time.Now().Hour(), time.Now().Minute())
-var ignoreDirs = map[string]bool{"node_modules": true, "file_inspector_go": true}
-var ignoreFiles = []*regexp.Regexp{regexp.MustCompile(`.+\.js`), regexp.MustCompile(`.+\.ts`)}
+var baseDir = "../SitioPublicoRedisenioSitefinity13"
+var outputDir = fmt.Sprintf("./output-%d-%d-%d(%d-%d)", time.Now().Day(), time.Now().Month(), time.Now().Year(), time.Now().Hour(), time.Now().Minute())
+var ignoreDirs = map[string]bool{"node_modules": true, ".git": true, ".vs": true, "packages": true}
+var ignoreFiles = []*regexp.Regexp{}
 var accumulator int
 
 var exist = false
 
 func main() {
+	start := time.Now()
 	recordFilePath := filepath.Join(".", "fileHashes.json")
 
 	_, err := os.Stat(recordFilePath)
@@ -44,15 +45,18 @@ func main() {
 		return
 	}
 
-	if accumulator > 0 {
-		fmt.Printf("Se han agregado %d archivos\n", accumulator)
-	}
-
 	if exist {
 		fmt.Println("Archivo de registro actualizado")
+		if accumulator > 0 {
+			fmt.Printf("Se han agregado %d archivos\n", accumulator)
+		}
 	} else {
 		fmt.Println("Archivo de registro generado")
 	}
+	elapsed := time.Since(start)
+	fmt.Printf("Execution time: %vms\n", elapsed.Milliseconds())
+	fmt.Println("Press intro to continue . . .")
+	fmt.Scanln()
 }
 
 func scanDir(dir string, fileHashes map[string]string) map[string]string {

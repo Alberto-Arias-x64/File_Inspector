@@ -1,12 +1,14 @@
+console.time('Execution time')
+
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const baseDir = './dir';
+const baseDir = '../SitioPublicoRedisenioSitefinity13';
 const date = new Date()
-const outputDir = `./output-${date.getTime()}`;
-const ignoreDirs = ['node_modules'];
-const ignoreFile = [/.+\.js/, /.+\.ts/];
+const outputDir = `./output-${date.getDate()}-${date.getUTCMonth() + 1}-${date.getFullYear()}(${date.getHours()}-${date.getMinutes()})`;
+const ignoreDirs = ['node_modules', '.git', '.vs', 'packages'];
+const ignoreFile = [''];
 
 const scanDir = (dir, fileHashes = {}) => {
     const files = fs.readdirSync(dir);
@@ -17,7 +19,7 @@ const scanDir = (dir, fileHashes = {}) => {
             if (ignoreDirs.includes(file)) return;
             scanDir(filePath, fileHashes);
         } else {
-            if (ignoreFile.some(element => element.test(file))) return;
+            if (ignoreFile.includes(file)) return;
             const fileData = fs.readFileSync(filePath);
             const fileHash = crypto.createHash('sha256').update(fileData).digest('hex');
             const relativePath = path.relative(baseDir, filePath);
@@ -29,7 +31,7 @@ const scanDir = (dir, fileHashes = {}) => {
                 }
                 fs.copyFileSync(filePath, outputFilePath);
                 //console.log(`Copiado ${filePath} a ${outputFilePath}`);
-                accumulator ++
+                accumulator++
             }
             fileHashes[relativePath] = fileHash;
         }
@@ -53,3 +55,5 @@ if (fs.existsSync(recordFilePath)) {
     fs.writeFileSync(recordFilePath, JSON.stringify(fileHashes, null, 2));
     console.log('Archivo de registro generado')
 }
+
+console.timeEnd('Execution time')
