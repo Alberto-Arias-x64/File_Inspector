@@ -39,6 +39,10 @@ const ignoreFile = ['.gitignore']; // Archivos que se ignorarán durante la insp
 
 Ajusta la ruta de la carpeta (`baseDir`) y la lista de archivos ignorados (`gitignore`) según tus requisitos.
 
+## Implementacion en GO (Experimental)
+
+El concepot de programacion es similar, pero se hace una implementacion e go para evaluar el rendimineto y ver si exixte mejora con respecto a un lenguaje interpretado, acutualmente se encuentra en fase experimental
+
 ## Contribuciones
 
 Las contribuciones son bienvenidas. Si encuentras algún error, tienes alguna idea para mejorar el script o deseas agregar nuevas características, no dudes en abrir un problema o enviar una solicitud de extracción.
