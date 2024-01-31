@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -18,17 +17,19 @@ var ignoreDirs = map[string]bool{"node_modules": true, "file_inspector_go": true
 var ignoreFiles = []*regexp.Regexp{regexp.MustCompile(`.+\.js`), regexp.MustCompile(`.+\.ts`)}
 var accumulator int
 
+var exist = false
+
 func main() {
 	recordFilePath := filepath.Join(".", "fileHashes.json")
-	exist := false
 
-	if _, err := os.Stat(recordFilePath); err == nil {
+	_, err := os.Stat(recordFilePath)
+	if err == nil {
 		exist = true
 	}
 
 	var fileHashes map[string]string
 	if exist {
-		oldFileHashes, err := ioutil.ReadFile(recordFilePath)
+		oldFileHashes, err := os.ReadFile(recordFilePath)
 		if err != nil {
 			fmt.Println("Error al leer el archivo de registro:", err)
 			return
@@ -55,7 +56,7 @@ func main() {
 }
 
 func scanDir(dir string, fileHashes map[string]string) map[string]string {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		fmt.Printf("Error al leer el directorio %s: %v\n", dir, err)
 		return fileHashes
@@ -69,7 +70,7 @@ func scanDir(dir string, fileHashes map[string]string) map[string]string {
 			}
 		} else {
 			if !shouldIgnore(file.Name()) {
-				fileData, err := ioutil.ReadFile(filePath)
+				fileData, err := os.ReadFile(filePath)
 				if err != nil {
 					fmt.Printf("Error al leer el archivo %s: %v\n", filePath, err)
 					continue
@@ -85,13 +86,15 @@ func scanDir(dir string, fileHashes map[string]string) map[string]string {
 				if fileHash != fileHashes[relativePath] {
 					outputFilePath := filepath.Join(outputDir, relativePath)
 					outputDirPath := filepath.Dir(outputFilePath)
-					if err := os.MkdirAll(outputDirPath, os.ModePerm); err != nil {
-						fmt.Printf("Error al crear el directorio %s: %v\n", outputDirPath, err)
-						continue
-					}
-					if err := ioutil.WriteFile(outputFilePath, fileData, os.ModePerm); err != nil {
-						fmt.Printf("Error al escribir en el archivo %s: %v\n", outputFilePath, err)
-						continue
+					if exist {
+						if err := os.MkdirAll(outputDirPath, os.ModePerm); err != nil {
+							fmt.Printf("Error al crear el directorio %s: %v\n", outputDirPath, err)
+							continue
+						}
+						if err := os.WriteFile(outputFilePath, fileData, os.ModePerm); err != nil {
+							fmt.Printf("Error al escribir en el archivo %s: %v\n", outputFilePath, err)
+							continue
+						}
 					}
 					accumulator++
 				}
